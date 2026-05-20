@@ -2,7 +2,7 @@
 //Syobon Action uses it. Minor functions are just replaced with SDL
 //counterparts.
 #include <SDL.h>
-#include <SDL/SDL_rotozoom.h>
+#include <SDL_rotozoom.h>
 #include <SDL/SDL_gfxPrimitives.h>
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_mixer.h>
