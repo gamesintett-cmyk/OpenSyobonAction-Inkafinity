@@ -1,0 +1,42 @@
+name: Build OpenSyobonAction
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Descargar proyecto
+        uses: actions/checkout@v4
+
+      - name: Preparar compilador MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Descargar SDL2
+        shell: powershell
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/libsdl-org/SDL/releases/download/release-2.30.2/SDL2-devel-2.30.2-VC.zip" -OutFile "SDL2.zip"
+          Expand-Archive SDL2.zip -DestinationPath .
+
+      - name: Compilar
+        shell: cmd
+        run: |
+          cl /EHsc /I SDL2-2.30.2\include *.cpp /link /LIBPATH:SDL2-2.30.2\lib\x64 SDL2.lib SDL2main.lib User32.lib Gdi32.lib Winmm.lib Shell32.lib
+
+      - name: Copiar DLL
+        shell: cmd
+        run: |
+          copy SDL2-2.30.2\lib\x64\SDL2.dll .
+
+      - name: Subir build
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenSyobonAction-Windows
+          path: |
+            *.exe
+            SDL2.dll
+            res/**
+            README.md
