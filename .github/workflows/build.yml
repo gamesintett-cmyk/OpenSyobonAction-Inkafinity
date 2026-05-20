@@ -21,15 +21,54 @@ jobs:
           Invoke-WebRequest -Uri "https://github.com/libsdl-org/SDL/releases/download/release-2.30.2/SDL2-devel-2.30.2-VC.zip" -OutFile "SDL2.zip"
           Expand-Archive SDL2.zip -DestinationPath .
 
+      - name: Descargar SDL2_image
+        shell: powershell
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/libsdl-org/SDL_image/releases/download/release-2.8.2/SDL2_image-devel-2.8.2-VC.zip" -OutFile "SDL2_image.zip"
+          Expand-Archive SDL2_image.zip -DestinationPath .
+
+      - name: Descargar SDL2_mixer
+        shell: powershell
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/libsdl-org/SDL_mixer/releases/download/release-2.8.0/SDL2_mixer-devel-2.8.0-VC.zip" -OutFile "SDL2_mixer.zip"
+          Expand-Archive SDL2_mixer.zip -DestinationPath .
+
+      - name: Descargar SDL2_ttf
+        shell: powershell
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/libsdl-org/SDL_ttf/releases/download/release-2.22.0/SDL2_ttf-devel-2.22.0-VC.zip" -OutFile "SDL2_ttf.zip"
+          Expand-Archive SDL2_ttf.zip -DestinationPath .
+
+      - name: Descargar SDL2_gfx
+        shell: powershell
+        run: |
+          git clone https://github.com/ferzkopp/SDL_gfx.git
+
       - name: Compilar
         shell: cmd
         run: |
-          cl /EHsc /I SDL2-2.30.2\include *.cpp /link /LIBPATH:SDL2-2.30.2\lib\x64 SDL2.lib SDL2main.lib User32.lib Gdi32.lib Winmm.lib Shell32.lib
+          cl /EHsc ^
+          /I SDL2-2.30.2\include ^
+          /I SDL2_image-2.8.2\include ^
+          /I SDL2_mixer-2.8.0\include ^
+          /I SDL2_ttf-2.22.0\include ^
+          /I SDL_gfx ^
+          *.cpp ^
+          /link ^
+          /LIBPATH:SDL2-2.30.2\lib\x64 ^
+          /LIBPATH:SDL2_image-2.8.2\lib\x64 ^
+          /LIBPATH:SDL2_mixer-2.8.0\lib\x64 ^
+          /LIBPATH:SDL2_ttf-2.22.0\lib\x64 ^
+          SDL2.lib SDL2main.lib SDL2_image.lib SDL2_mixer.lib SDL2_ttf.lib ^
+          User32.lib Gdi32.lib Winmm.lib Shell32.lib
 
-      - name: Copiar DLL
+      - name: Copiar DLLs
         shell: cmd
         run: |
           copy SDL2-2.30.2\lib\x64\SDL2.dll .
+          copy SDL2_image-2.8.2\lib\x64\SDL2_image.dll .
+          copy SDL2_mixer-2.8.0\lib\x64\SDL2_mixer.dll .
+          copy SDL2_ttf-2.22.0\lib\x64\SDL2_ttf.dll .
 
       - name: Subir build
         uses: actions/upload-artifact@v4
@@ -37,6 +76,7 @@ jobs:
           name: OpenSyobonAction-Windows
           path: |
             *.exe
-            SDL2.dll
+            *.dll
+            BGM/**
+            SE/**
             res/**
-            README.md
